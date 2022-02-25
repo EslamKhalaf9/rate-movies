@@ -44,7 +44,9 @@ export const postregister = asyncHandler(async (req, res, next) => {
 
   await user.save();
   //todo Generate JWT Token
-
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: '7d',
+  });
   res.status(201).json({
     username: user.username,
     email: user.email,
