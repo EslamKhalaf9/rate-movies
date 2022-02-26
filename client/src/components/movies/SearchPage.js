@@ -1,34 +1,28 @@
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import MovieSearch from "./MovieSearch";
-import MovieList from "./MoviesList";
+import MovieSearch from './MovieSearch';
+import MovieList from './MoviesList';
+import { searchMovies } from '../../redux/features/movies/moviesSlice';
 
 const SearchPage = () => {
-  const [movies, setMovies] = useState([]);
-  const [name, setName] = useState("");
-  const API_PATH = 'https://www.omdbapi.com/';
-  const API_KEY = '4f078e44';
+  const { movies: fetchedMovies } = useSelector((state) => state.movies);
+  const dispatch = useDispatch();
+  const [movies, setMovies] = useState(fetchedMovies);
+  const [name, setName] = useState('');
+  useEffect(() => {
+    setMovies(fetchedMovies);
+  }, [fetchedMovies]);
   const handleSearch = async (e) => {
     e.preventDefault();
-    // http://www.omdbapi.com/?s=batman&apikey=4f078e44
-    const url = `${API_PATH}?s=${name}&apikey=${API_KEY}`;
-    //calling API and change state
-    let result = await axios.get(url)
-    result = result.data.Search;
-    setMovies(result)
-    //reset the input field
-    setName('');
-
-    // logging ther result for debugging
-    console.log(result);
-  }
-  return ( 
-    <div className="flex flex-col content-center text-center">
+    dispatch(searchMovies(name));
+  };
+  return (
+    <div className='flex flex-col content-center text-center'>
       <MovieSearch onSearch={handleSearch} name={name} setName={setName} />
       <MovieList movies={movies} />
     </div>
-   );
-}
- 
+  );
+};
+
 export default SearchPage;
